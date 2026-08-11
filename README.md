@@ -9,43 +9,43 @@ AnimePahe Quick Downloader is a lightweight browser extension that helps you dow
 - Provides fast access to browser download flow
 - Designed for a simple and minimal workflow
 
-## 
+## Extension UI Showcase
 <table>
-<tr>
+  <tr>
+    <td align="center" colspan="3">
+      <img src="screenshots/homepage_ui.png" width="220"><br>
+      <b>Homepage</b>
+    </td>
+  </tr>
 
-<td align="center">
-<img src="screenshots/homepage_ui.png" width="220"><br>
-<b></b>
-</td>
+  <tr>
+    <td align="center">
+      <img src="screenshots/extension_on_hover_initial_state.png" width="220"><br>
+      <b>On Hover</b>
+    </td>
 
-<td align="center">
-<img src="screenshots/extension_on_hover_initial_state.png" width="220"><br>
-<b>On Hover</b>
-</td>
+    <td align="center">
+      <img src="screenshots/extension_on_dropdown.png" width="220"><br>
+      <b>Dropdown</b>
+    </td>
 
-<td align="center">
-<img src="screenshots/extension_on_dropdown.png" width="220"><br>
-<b>Dropdown</b>
-</td>
+    <td align="center">
+      <img src="screenshots/download_progressbar.png" width="220"><br>
+      <b>Progress Bar</b>
+    </td>
+  </tr>
 
-<td align="center">
-<img src="screenshots/download_progressbar.png" width="220"><br>
-<b>Progress Bar</b>
-</td>
-</tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/download_complete.png" width="220"><br>
+      <b>Download Complete</b>
+    </td>
 
-<tr>
-<td align="center">
-<img src="screenshots/download_complete.png" width="220"><br>
-<b>Download Complete</b>
-</td>
-
-<td align="center">
-<img src="screenshots/download_failed.png" width="220"><br>
-<b>Donwload Failed</b>
-</td>
-
-</tr>
+    <td align="center">
+      <img src="screenshots/download_failed.png" width="220"><br>
+      <b>Download Failed</b>
+    </td>
+  </tr>
 </table>
 
 ## Installation
