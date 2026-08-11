@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:background": "esbuild src/background/background.ts --bundle --outfile=dist/background.js --format=esm",
+    "build:animepahe": "esbuild src/content/animepahe/animepahe.ts --bundle --outfile=dist/animepahe.js --format=esm",
+    "build:pahe": "esbuild src/content/pahe/pahe.ts --bundle --outfile=dist/pahe.js --format=esm",
+    "build:kwik": "esbuild src/content/kwik/kwik.ts --bundle --outfile=dist/kwik.js --format=esm",
+    "build": "npm run build:animepahe && npm run build:background && npm run build:pahe && npm run build:kwik"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.2.0",
+    "esbuild": "^0.28.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.1.0"
+  }
+}

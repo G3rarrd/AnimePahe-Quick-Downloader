@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "AnimePahe Quick Downloader",
+  "version": "1.0",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "animepahe-quick-downloader@extension"
+    }
+  },
+  
+  "permissions": [
+    "tabs",
+    "downloads",
+    "storage",
+    "scripting"
+  ],
+
+  "host_permissions": [
+      "*://animepahe.pw/*",
+      "*://animepahe.com/*",
+      "*://animepahe.org/*",
+      "*://pahe.win/*",
+      "*://kwik.cx/*"
+  ],
+
+  "background": {
+    "scripts": ["dist/background.js"],
+    "service_worker": "dist/background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://animepahe.pw/*", "https://animepahe.org/*", "https://animepahe.com/*"],
+      "js": ["dist/animepahe.js"],
+      "css":["src/styles.css"],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+]
+
+}
