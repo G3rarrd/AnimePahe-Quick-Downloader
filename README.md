@@ -14,7 +14,7 @@ AnimePahe Quick Downloader is a lightweight browser extension that helps you dow
 <table>
   <tr>
     <td align="center" colspan="3">
-      <img src="screenshots/homepage_ui.png" width="220"><br>
+      <img src="screenshots/homepage_ui.png"><br>
       <b>Homepage</b>
     </td>
   </tr>
