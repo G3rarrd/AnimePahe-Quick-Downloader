@@ -1,7 +1,7 @@
 import type { LaunchTabMessage } from "../../types/messages";
 import { injectScript } from "../services/scriptService";
 import { tabsState} from "../state";
-import { createAutomationTab } from "../services/tabService";
+import { createAutomationTab,waitForTabLoad } from "../services/tabService";
 
 export async function launchTab(
     message: LaunchTabMessage,
@@ -9,14 +9,17 @@ export async function launchTab(
     sourceTabId: number,
     downloadKey : string
 ) {
-    const tab = await createAutomationTab(message.url);
+    const automationTab = await createAutomationTab(message.url);
 
-    if (tab?.id === undefined) return;
+    if (automationTab?.id === undefined) return;
 
-    tabsState.set(tab.id, {
-        sourceTabId: sourceTabId,
-        downloadKey
+    tabsState.set(automationTab.id, {
+        sourceTabId,
+        downloadKey,
+        waitingForDownload : true
     });
+    await waitForTabLoad(automationTab.id);
 
-    await injectScript(tab.id, file);
+    await injectScript(automationTab.id, file);
 }
+

@@ -3,17 +3,22 @@ import { cancelIcon } from "../icons/cancel";
 import type { DownloadProgress } from "../types/downloadProgress";
 import { progressRing } from "./progressRing";
 
-export function progressContainer(downloadId : number) : HTMLSpanElement {
+export function progressContainer(foundDownloadId : number) : HTMLSpanElement {
     const container : HTMLSpanElement = document.createElement("span");
     container.classList.add("progress-container");
 
     const {svg, setProgress} = progressRing();
     container.appendChild(svg);
-    function onMessage(message: any) {
-        if (message.type !== 'DOWNLOAD_PROGRESS' && 
-            message.payload.downloadId !== downloadId) return;
 
-        const { percent, downloadState, error }: DownloadProgress = message.payload;
+    function onMessage(message: any) {
+        
+        if (message.type !== 'DOWNLOAD_PROGRESS') return;
+         
+        const { percent, downloadState, error, downloadId }: DownloadProgress = message.payload;
+        
+        console.log(downloadId, foundDownloadId)
+        
+        if  (downloadId !== foundDownloadId) return;
 
         setProgress(percent);
 

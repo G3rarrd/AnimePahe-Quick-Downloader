@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# TypeScript/build output
+dist/
+build/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/

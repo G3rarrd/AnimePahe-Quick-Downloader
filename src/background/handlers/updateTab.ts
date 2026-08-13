@@ -16,7 +16,7 @@ export async function updateTab(message : UpdateTabMessage, file : string, newTa
             const tabTitle = tab.title;
             
             // User must solve captcha to proceed when needed so I direct them to it
-            // no further redirections will be made after solving the captcha
+            // no further redirections will be made after solving the captcha for that session
             if (tabTitle === captchaTitle) {
                 await chrome.tabs.update(newTabId, { active: true });
                 return;

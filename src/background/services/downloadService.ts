@@ -1,18 +1,5 @@
 import type { DownloadProgress } from "../../types/downloadProgress";
 
-
-
-export function createDownload(tabId : number) : Promise<number> {
-    // close the tab when the download has started and return the download id for use
-    return new Promise((resolve) => {
-        chrome.downloads.onCreated.addListener(function listener(downloadItem) {
-            resolve(downloadItem.id);
-            chrome.tabs.remove(tabId);
-            chrome.downloads.onCreated.removeListener(listener);
-        });    
-    });
-}
-
 async function sendProgress(
     sourceTabId: number,
     payload: DownloadProgress

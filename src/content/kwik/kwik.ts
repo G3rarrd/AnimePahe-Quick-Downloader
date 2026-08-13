@@ -7,11 +7,11 @@ async function init() {
     
     if (!downloadBtn) return;
     
-    downloadBtn.click();
-
     const response = await chrome.runtime.sendMessage({
         type : "DOWNLOAD_ANIME"
     })
+
+    downloadBtn.click();
 }
 
 

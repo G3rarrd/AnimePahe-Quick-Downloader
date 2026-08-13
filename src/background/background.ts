@@ -1,6 +1,9 @@
 import { updateTab } from "./handlers/updateTab";
 import { launchTab } from "./handlers/launchTab";
-import { downloadAnime } from "./handlers/downloadAnime";
+// import { downloadAnime } from "./handlers/downloadAnime";
+import { tabsState } from "./state";
+import { monitorDownload } from "./services/downloadService";
+import { closeTabWhenPossible } from "./services/tabService";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // console.log(message, message.type)
@@ -29,16 +32,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             
         case "DOWNLOAD_ANIME": {
             const automationTabId =sender.tab?.id 
-            if (automationTabId === undefined) return true
-            
-            downloadAnime(automationTabId)
-                .then((result) => {
-                    sendResponse({ success: true, data: result });
-                })
-                .catch((error) => {
-                    sendResponse({ success: false, error: error.message });
-                });
-            return true;
+
+            if (automationTabId === undefined) return true;
+
+            const state = tabsState.get(automationTabId)
+
+            if (!state) return;
+
+            state.waitingForDownload = true;
+
         }
     }
 })
+
+chrome.downloads.onCreated.addListener((download) => {
+    for (const [tabId, state] of tabsState) {
+        if (!state.waitingForDownload) {
+            continue;
+        }
+
+        state.waitingForDownload = false;
+        state.downloadId = download.id;
+
+        chrome.tabs.sendMessage(state.sourceTabId, {
+            type: "DOWNLOAD_ID_FOUND",
+            downloadKey: state.downloadKey,
+            downloadId: download.id,
+        }).catch(() => {});
+
+        monitorDownload(state.sourceTabId,download.id);
+
+        void closeTabWhenPossible(tabId);
+
+        break;
+    }
+});
