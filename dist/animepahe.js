@@ -212,13 +212,13 @@ function progressRing(color = "#3b82f6") {
 }
 
 // src/components/progressContainer.ts
-function progressContainer() {
+function progressContainer(downloadId) {
   const container = document.createElement("span");
   container.classList.add("progress-container");
   const { svg, setProgress } = progressRing();
   container.appendChild(svg);
   function onMessage(message) {
-    if (message.type !== "DOWNLOAD_PROGRESS") return;
+    if (message.type !== "DOWNLOAD_PROGRESS" && message.payload.downloadId !== downloadId) return;
     const { percent, downloadState, error } = message.payload;
     setProgress(percent);
     if (downloadState === "complete") {
@@ -235,16 +235,33 @@ function progressContainer() {
 }
 
 // src/content/animepahe/downloadHandler.ts
+var downloadElements = /* @__PURE__ */ new Map();
 function downloadLinkElementListener(element) {
+  const downloadKey = crypto.randomUUID();
+  element.dataset.downloadKey = downloadKey;
+  downloadElements.set(downloadKey, element);
   const listener = (e) => {
     e.preventDefault();
     element?.querySelector(".progress-container")?.remove();
-    element.append(progressContainer());
     chrome.runtime.sendMessage({
       type: "LAUNCH_TAB",
-      url: element.href
+      url: element.href,
+      downloadKey
     });
   };
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.type !== "DOWNLOAD_ID_FOUND" || message.downloadKey !== downloadKey) return;
+    const element2 = downloadElements.get(message.downloadKey);
+    if (!element2) {
+      console.warn(
+        "Download element not found:",
+        message.downloadKey
+      );
+      return;
+    }
+    element2.querySelector(".progress-container")?.remove();
+    element2.append(progressContainer(message.downloadID));
+  });
   element.addEventListener("click", listener);
 }
 function modifyDropupDownloadLinks() {

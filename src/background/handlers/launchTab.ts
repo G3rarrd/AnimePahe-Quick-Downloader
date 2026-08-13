@@ -1,16 +1,22 @@
 import type { LaunchTabMessage } from "../../types/messages";
 import { injectScript } from "../services/scriptService";
-import { state } from "../state";
+import { tabsState} from "../state";
 import { createAutomationTab } from "../services/tabService";
 
-export async function launchTab(message : LaunchTabMessage, file : string) {
+export async function launchTab(
+    message: LaunchTabMessage,
+    file: string,
+    sourceTabId: number,
+    downloadKey : string
+) {
     const tab = await createAutomationTab(message.url);
 
-    if (!tab) return
+    if (tab?.id === undefined) return;
 
-    state.pendingTabId = tab.id;
+    tabsState.set(tab.id, {
+        sourceTabId: sourceTabId,
+        downloadKey
+    });
 
-    if (!state.pendingTabId) return;
-
-    await injectScript(state.pendingTabId, file);
+    await injectScript(tab.id, file);
 }

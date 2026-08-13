@@ -1,4 +1,7 @@
-# AnimePahe Quick Downloader
+<h2>
+  <img src="screenshots/animepha_logo.png" width="24" height="24" alt="Logo">
+  AnimePahe Quick Downloader
+</h2>
 
 AnimePahe Quick Downloader is a lightweight browser extension that helps you download episodes from AnimePahe faster and more conveniently.
 
@@ -6,8 +9,8 @@ AnimePahe Quick Downloader is a lightweight browser extension that helps you dow
 
 - Users can view download options available for their favourite Anime and download it seamlessly 
 - Detects episode links and download URLs
-- Provides fast access to browser download flow
-- Designed for a simple and minimal workflow
+- Supports persistent storage on the fetched download options for a limited time.
+- Download progress is monitored and reflected on the UI.
 
 ## Extension UI Showcase
 
@@ -59,16 +62,21 @@ AnimePahe Quick Downloader is a lightweight browser extension that helps you dow
 This extension is built using standard web extension files such as:
 
 - `manifest.json`
-- `popup.html`
-- `popup.js`
-- `content.js`
 - `background.js`
+
+And injecting the ui on each anime episode on the animepahe site. Additionally, automation scripts for kwik and pahe are injected when a download option is selected by the user.
 
 ## Usage
 
-1. Navigate to an AnimePahe episode page.
-2. Open the extension popup.
-3. Use the quick download controls to begin the download process.
+1. Head over to the AnimePahe homepage or episode page.
+2. Hover over an episode you would like to download.
+3. Click the view download button to see the available download options for the episode
+4. Selet your episode and wait for the download to begin automatically
+
+Note: You will have to solve the cloudflare captcha created by the kwik site once per session for other downloads to work automatically.
+
+## Browser Support
+- This extension is only available on the chrome browser as of right now. Future works are for it to work on Mozilla Firefox and others.
 
 ## Notes
 

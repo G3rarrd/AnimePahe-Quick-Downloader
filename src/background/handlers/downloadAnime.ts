@@ -1,13 +1,24 @@
 import { createDownload, monitorDownload } from "../services/downloadService";
-import { state } from "../state";
+import {  tabsState } from "../state";
 
-export async function downloadAnime() {
-    const tabId = state.pendingTabId;
+export async function downloadAnime(newTabId : number ) {
     
-    if (! tabId) {
-        return;
+    const downloadId = await createDownload(newTabId);
+
+    const state = tabsState.get(newTabId)
+    
+    if (state){
+        chrome.tabs.sendMessage(state.sourceTabId, {
+            type: "DOWNLOAD_ID_FOUND",
+            downloadKey : state.downloadKey,
+            downloadId : downloadId
+        })
+        state.downloadId = downloadId
+        monitorDownload(state.sourceTabId, downloadId);
     }
+
+
     
-    state.pendingDownloadId = await createDownload(tabId);
-    await monitorDownload(state.pendingDownloadId);
+
+    return downloadId
 }

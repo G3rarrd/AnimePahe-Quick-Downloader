@@ -1,5 +1,5 @@
 import type { DownloadProgress } from "../../types/downloadProgress";
-import { state } from "../state";
+
 
 
 export function createDownload(tabId : number) : Promise<number> {
@@ -13,13 +13,24 @@ export function createDownload(tabId : number) : Promise<number> {
     });
 }
 
-async function sendProgress(payload: object) {
-    if (state.currentTabId) {
-        chrome.tabs.sendMessage(state.currentTabId, { type: 'DOWNLOAD_PROGRESS', payload });
+async function sendProgress(
+    sourceTabId: number,
+    payload: DownloadProgress
+) {
+    try {
+        await chrome.tabs.sendMessage(sourceTabId, {
+            type: "DOWNLOAD_PROGRESS",
+            payload,
+        });
+    } catch (error) {
+        console.error(
+            `Failed to send progress to tab ${sourceTabId}:`,
+            error
+        );
     }
 }
 
-export async function monitorDownload(downloadId : number){
+export async function monitorDownload(sourceTabId : number, downloadId : number){
     const interval = setInterval(() => {
         chrome.downloads.search({id : downloadId }, ([item]) => {
             if (!item) {
@@ -43,7 +54,7 @@ export async function monitorDownload(downloadId : number){
                 error: item.error,
             };
             
-            sendProgress(payload);
+            sendProgress(sourceTabId, payload);
 
 
             if (item.state === 'complete' || item.state === 'interrupted') {

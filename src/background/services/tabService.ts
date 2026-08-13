@@ -1,5 +1,3 @@
-import { state } from "../state";
-
 export async function createAutomationTab(url: string) : Promise<chrome.tabs.Tab | undefined> {
 
     const tabs: chrome.tabs.Tab[] = await chrome.tabs.query({
@@ -16,8 +14,6 @@ export async function createAutomationTab(url: string) : Promise<chrome.tabs.Tab
         active : false,
         index : currentTab.index + 1
     };
-
-    state.currentTabId = currentTab.id;
 
     const newTab = await chrome.tabs.create(tabProps);
 
