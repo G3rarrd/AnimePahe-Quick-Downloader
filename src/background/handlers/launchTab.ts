@@ -18,6 +18,8 @@ export async function launchTab(
         downloadKey,
         waitingForDownload : true
     });
+    
+    // Prevents race conditions
     await waitForTabLoad(automationTab.id);
 
     await injectScript(automationTab.id, file);

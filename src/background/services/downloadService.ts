@@ -5,6 +5,7 @@ async function sendProgress(
     payload: DownloadProgress
 ) {
     try {
+        // Message Handler: src\components\progressContainer.ts
         await chrome.tabs.sendMessage(sourceTabId, {
             type: "DOWNLOAD_PROGRESS",
             payload,

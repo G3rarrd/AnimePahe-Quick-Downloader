@@ -11,12 +11,11 @@ export function progressContainer(foundDownloadId : number) : HTMLSpanElement {
     container.appendChild(svg);
 
     function onMessage(message: any) {
-        
+
+        // Message Source: src\background\services\downloadService.ts
         if (message.type !== 'DOWNLOAD_PROGRESS') return;
          
         const { percent, downloadState, error, downloadId }: DownloadProgress = message.payload;
-        
-        console.log(downloadId, foundDownloadId)
         
         if  (downloadId !== foundDownloadId) return;
 

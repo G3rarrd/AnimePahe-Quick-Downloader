@@ -4,15 +4,16 @@ export function downloadLinkElementListener(element: HTMLAnchorElement) {
     const downloadKey = crypto.randomUUID();
     
     const onDownloadIdFound = (message: any) => {
+        // Message Source: src\background\background.ts
         if (message.type !== "DOWNLOAD_ID_FOUND") return
 
-        const progressElement = downloadElements.get(message.downloadKey)
+        const progressRingElement = downloadElements.get(message.downloadKey)
 
-        if (!progressElement) return
+        if (!progressRingElement) return
 
-        progressElement.querySelector(".progress-container")?.remove();
+        progressRingElement.querySelector(".progress-container")?.remove();
 
-        progressElement.append(progressContainer(message.downloadId));
+        progressRingElement.append(progressContainer(message.downloadId));
     };
     
     chrome.runtime.onMessage.addListener(onDownloadIdFound);
@@ -23,6 +24,7 @@ export function downloadLinkElementListener(element: HTMLAnchorElement) {
         element.querySelector(".progress-container")?.remove();
         // element.append(progressContainer());
         
+        // Message Handler: src\background\background.ts
         chrome.runtime.sendMessage({
             type: "LAUNCH_TAB",
             url: element.href,

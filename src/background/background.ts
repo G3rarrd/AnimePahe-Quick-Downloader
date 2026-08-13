@@ -1,28 +1,32 @@
 import { updateTab } from "./handlers/updateTab";
 import { launchTab } from "./handlers/launchTab";
-// import { downloadAnime } from "./handlers/downloadAnime";
 import { tabsState } from "./state";
 import { monitorDownload } from "./services/downloadService";
 import { closeTabWhenPossible } from "./services/tabService";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // console.log(message, message.type)
     switch (message.type) {
 
         case "LAUNCH_TAB":{
+            // The message originates from the tab that initiated the automation.
+            // Message Source: src\content\animepahe\downloadHandler.ts
             const sourceTabId =sender.tab?.id 
             if (sourceTabId === undefined) return true
             console.log(message.downloadKey)
             
-            launchTab(message, "dist/pahe.js", sourceTabId, message.downloadKey).then(() => {});
+            // Message Handler: src/content/pahe/pahe.ts
+            void launchTab(message, "dist/pahe.js", sourceTabId, message.downloadKey);
             return true;
         }
         
-        // The message type is triggered in the new tab
+
         case "UPDATE_TAB": {
+            // This message is sent from the newly opened automation tab.
+            // Message Source: src\content\pahe\pahe.ts
             const automationTabId =sender.tab?.id 
             if (automationTabId === undefined) return true
             
+            // Message Handler: src/content/kwik/kwik.ts
             updateTab(message, "dist/kwik.js", automationTabId)
                 .then((result) => {
                     sendResponse({success : true, data : result});
@@ -31,6 +35,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
             
         case "DOWNLOAD_ANIME": {
+            // The injected Kwik script notifies the background worker that a download is about to start.
+            // Message Source: src\content\kwik\kwik.ts
             const automationTabId =sender.tab?.id 
 
             if (automationTabId === undefined) return true;
@@ -50,7 +56,7 @@ chrome.downloads.onCreated.addListener((download) => {
         if (!state.waitingForDownload) {
             continue;
         }
-
+        // console.log()
         state.waitingForDownload = false;
         state.downloadId = download.id;
 
