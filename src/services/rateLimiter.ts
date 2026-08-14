@@ -29,4 +29,4 @@ class TokenBucketLimiter {
 
 }
 
-export const fetchRateLimiter = new TokenBucketLimiter(3,  0.33333);
+export const fetchRateLimiter = new TokenBucketLimiter(3,  0.15);

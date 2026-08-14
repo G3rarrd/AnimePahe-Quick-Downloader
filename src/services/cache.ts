@@ -8,13 +8,13 @@ export async function getCachedLinks(url: string): Promise<CacheEntry | undefine
 
 // Store to local storage for limited persistent storage
 export async function setCachedLinks(
-    url : string, linkTags : HTMLAnchorElement[], expireTiem : number) : Promise<void>{
+    url : string, linkTags : HTMLAnchorElement[], expireTime : number) : Promise<void>{
     
         const linkElems : string[] = linkTags.map(tag => tag.outerHTML);
 
         await chrome.storage.local.set({[url] : {
                         linkHTMLs : linkElems,
-                        expires: Date.now() + 1000 * 60 * 60 * expireTiem 
+                        expires: Date.now() + 1000 * 60 * 60 * expireTime 
                     }})
 }
 

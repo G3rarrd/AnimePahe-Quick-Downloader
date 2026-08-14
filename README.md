@@ -1,9 +1,13 @@
 <h2>
-  <img src="screenshots/animepha_logo.png" width="24" height="24" alt="Logo">
+  <img src="screenshots/animepahe_logo_no_bg.png" width="24" height="24" alt="Logo">
   AnimePahe Quick Downloader
 </h2>
 
 AnimePahe Quick Downloader is a lightweight browser extension that helps you download episodes from AnimePahe faster and more conveniently.
+
+## Demo
+
+<img src="screenshots/animepahe_quick_downloader_demo.gif" width="24" height="24" alt="demo_gif">
 
 ## Features
 
