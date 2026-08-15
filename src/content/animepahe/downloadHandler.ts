@@ -1,5 +1,8 @@
 import { progressContainer } from "../../components/progressContainer";
+import { fetchKwikLink } from "../../services/fetchDownloadLinks";
+
 const downloadElements = new Map<string, HTMLAnchorElement>();
+
 export function downloadLinkElementListener(element: HTMLAnchorElement) {
     const downloadKey = crypto.randomUUID();
     
@@ -18,19 +21,20 @@ export function downloadLinkElementListener(element: HTMLAnchorElement) {
     
     chrome.runtime.onMessage.addListener(onDownloadIdFound);
     
-    const onClick = (e: Event) => {
+    const onClick = async  (e: Event) => {
         e.preventDefault()
         downloadElements.set(downloadKey, element)
-        element.querySelector(".progress-container")?.remove();
-        // element.append(progressContainer());
-        
+
+        console.log(`Fetching ${element.href}...`)
+        const link = await fetchKwikLink(element.href)
+        console.log(`URL Found: ${link}. Launching Tab`)
+
         // Message Handler: src\background\background.ts
         chrome.runtime.sendMessage({
             type: "LAUNCH_TAB",
-            url: element.href,
+            url: link,
             downloadKey,
         });
-
     }
 
     element.addEventListener("click", onClick);

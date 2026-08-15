@@ -32,22 +32,44 @@ export async function createAutomationTab(url: string) : Promise<chrome.tabs.Tab
     });
 }
 
-export function waitForTabLoad(tabId: number): Promise<void> {
-    return new Promise((resolve) => {
-        const listener = (
-            updatedTabId: number,
-            changeInfo: chrome.tabs.OnUpdatedInfo
-        ) => {
-            if (
-                updatedTabId === tabId &&
-                changeInfo.status === "complete"
-            ) {
-                chrome.tabs.onUpdated.removeListener(listener);
+export function waitForKwikTabLoad(tabId: number): Promise<void> {
+    const captchaTitle = "Just a moment...";
+
+    return new Promise((resolve, reject) => {
+        const cleanup = () => {
+            chrome.tabs.onUpdated.removeListener(updateListener);
+            chrome.tabs.onRemoved.removeListener(removeListener);
+        }
+
+        const updateListener = async (updatedTabId: number, changeInfo: chrome.tabs.OnUpdatedInfo) => {
+            if (updatedTabId !== tabId || changeInfo.status !== "complete") {
+                return
+            }
+
+            try {
+                const tab = await chrome.tabs.get(tabId)
+                if (tab.title === captchaTitle) {
+                    await chrome.tabs.update(tabId, { active: true });
+                    return;
+                }
+                cleanup();
                 resolve();
+
+            } catch (error) {
+                cleanup();
+                reject(error);
             }
         };
 
-        chrome.tabs.onUpdated.addListener(listener);
+        const removeListener = (closedTabId: number) => {
+            if (closedTabId == tabId) {
+                cleanup();
+                reject(new Error(`Tab ${tabId} was closed before loading completed.`));
+            }
+        }
+
+        chrome.tabs.onUpdated.addListener(updateListener);
+        chrome.tabs.onRemoved.addListener(removeListener);
     });
 }
 
@@ -68,18 +90,11 @@ export async function closeTabWhenPossible(tabId: number) {
                     : String(error);
 
             // The tab may already have been closed.
-            if (message.includes("No tab with id")) {
-                return;
-            }
+            if (message.includes("No tab with id")) return;
 
-            console.warn(
-                `Could not close tab ${tabId} (attempt ${attempt + 1}/${maxAttempts})`,
-                message
-            );
+            console.warn(`Could not close tab ${tabId} (attempt ${attempt + 1}/${maxAttempts})`, message);
 
-            await new Promise((resolve) =>
-                setTimeout(resolve, retryDelay)
-            );
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
     }
 

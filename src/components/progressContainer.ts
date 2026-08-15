@@ -3,8 +3,8 @@ import { cancelIcon } from "../icons/cancel";
 import type { DownloadProgress } from "../types/downloadProgress";
 import { progressRing } from "./progressRing";
 
+const container : HTMLSpanElement = document.createElement("span");
 export function progressContainer(foundDownloadId : number) : HTMLSpanElement {
-    const container : HTMLSpanElement = document.createElement("span");
     container.classList.add("progress-container");
 
     const {svg, setProgress} = progressRing();

@@ -49,6 +49,7 @@ export function fetchDownloadOptionButtons (url : string): (HTMLDivElement | HTM
                 
                 button.innerHTML = `<span>Loading ${loaderIcon}</span>`;
 
+                // So users won't bombard the servers and get their IPs banned accidentally
                 if (!fetchRateLimiter.allow()) {
                     button.innerHTML = `<span>Please wait a moment ${refreshIcon}</span>`;
                     return false;

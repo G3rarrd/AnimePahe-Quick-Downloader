@@ -1,7 +1,7 @@
 import type { LaunchTabMessage } from "../../types/messages";
 import { injectScript } from "../services/scriptService";
 import { tabsState} from "../state";
-import { createAutomationTab,waitForTabLoad } from "../services/tabService";
+import { createAutomationTab,waitForKwikTabLoad } from "../services/tabService";
 
 export async function launchTab(
     message: LaunchTabMessage,
@@ -19,8 +19,9 @@ export async function launchTab(
         waitingForDownload : true
     });
     
-    // Prevents race conditions
-    await waitForTabLoad(automationTab.id);
+    // Ensures the kwik site is open.
+    // Possibilities of a user captcha to solve
+    await waitForKwikTabLoad(automationTab.id);
 
     await injectScript(automationTab.id, file);
 }
