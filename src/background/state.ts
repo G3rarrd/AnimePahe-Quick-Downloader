@@ -1,10 +1,3 @@
-
-
-type TabState = {
-    sourceTabId: number;
-    downloadId?: number;
-    downloadKey : string;
-    waitingForDownload: boolean;
-};
+import type { TabState } from "../types/state";
 
 export const tabsState = new Map<number, TabState>();

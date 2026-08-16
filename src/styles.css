@@ -113,6 +113,34 @@
 }
 
 /* ============================================
+   DOWNLOAD STARTING PULSE CONTAINER 
+   ============================================ */
+.pulse-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.1rem;
+}
+.pulse-bubble {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #fff;
+    animation: fade 1.4s infinite ease-in-out both;
+}
+
+.pulse-bubble-1 { animation-delay: -0.32s; }
+.pulse-bubble-2 { animation-delay: -0.16s; }
+.pulse-bubble-3 { animation-delay: 0s; }
+
+@keyframes fade {
+    0%, 80%, 100% { 
+        opacity: 0; 
+    }
+    40% { 
+        opacity: 1; 
+    }
+}
+/* ============================================
    PROGRESS CONTAINER
    ============================================ */
 .progress-container {

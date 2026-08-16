@@ -14,6 +14,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
             // Message Handler: src/content/pahe/pahe.ts
             void launchTab(message, "dist/kwik.js", sourceTabId, message.downloadKey);
+
             return true;
         }
         
