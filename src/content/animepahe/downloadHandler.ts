@@ -2,7 +2,9 @@ import { loadingDots } from "../../components/loadingDots";
 import { progressContainer } from "../../components/progressContainer";
 import { fetchKwikLink } from "../../services/fetchDownloadLinks";
 
+
 const downloadElements = new Map<string, HTMLAnchorElement>();
+
 
 const cleanup = (element : HTMLAnchorElement) => {
     element.querySelector(".pulse-container")?.remove();
@@ -11,31 +13,43 @@ const cleanup = (element : HTMLAnchorElement) => {
 
 chrome.runtime.onMessage.addListener((message : any) => {
         // Message Source: src\background\background.ts
-    if (message.type !== "DOWNLOAD_ID_FOUND") return
+    if (message.type === "DOWNLOAD_ID_FOUND") {
+        const linkElement = downloadElements.get(message.downloadKey);
 
-    const linkElement = downloadElements.get(message.downloadKey)
+    
+        if (!linkElement) return;
+    
+        cleanup(linkElement);
+    
+        linkElement.append(progressContainer(message.downloadId));
+    
+        downloadElements.delete(message.downloadKey);
+    }
 
-    if (!linkElement) return;
+    else if (message.type === "FAILED_TO_FETCH_DOWNLOAD") {
+        const linkElement = downloadElements.get(message.downloadKey)
+        if (!linkElement) return;
 
-    cleanup(linkElement);
+        cleanup(linkElement);
+        
+        linkElement.append(loadingDots(false));
 
-    linkElement.append(progressContainer(message.downloadId));
-
-    downloadElements.delete(message.downloadKey)
+        downloadElements.delete(message.downloadKey);
+    }
 })
 
 export function downloadLinkElementListener(element: HTMLAnchorElement) {
     const downloadKey = crypto.randomUUID();
 
     // State flag to prevent multiple rapid clicks
-    let isProcessing = false;
+    
 
     const onClick = async  (e: Event) => {
         e.preventDefault();
 
-        if (isProcessing) return;
-
-        isProcessing = true;
+        // since the download key  is still in the downloadelements, it
+        // means it has not finished processing the element link
+        if (downloadElements.has(downloadKey)) return;
         
         cleanup(element);
 
@@ -53,16 +67,11 @@ export function downloadLinkElementListener(element: HTMLAnchorElement) {
                 downloadKey,
             });
 
-            cleanup(element);
-            element.append(progressContainer());
-
         } catch (error) {
             console.error(`Failed to fetch link for ${element.href}`, error);
             cleanup(element);
             element.append(loadingDots(false));
             downloadElements.delete(downloadKey);
-        } finally {
-            isProcessing = false;
         }
     }
 

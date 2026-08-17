@@ -1,3 +1,6 @@
+import { tabsState } from "../state";
+import { sendDownloadFailureMessage } from "./messageService";
+
 export async function createAutomationTab(url: string) : Promise<chrome.tabs.Tab | undefined> {
 
     const tabs: chrome.tabs.Tab[] = await chrome.tabs.query({
@@ -47,7 +50,7 @@ export function waitForKwikTabLoad(tabId: number): Promise<void> {
             }
 
             try {
-                const tab = await chrome.tabs.get(tabId)
+                const tab = await chrome.tabs.get(tabId);
                 if (tab.title === captchaTitle) {
                     await chrome.tabs.update(tabId, { active: true });
                     return;
@@ -61,10 +64,12 @@ export function waitForKwikTabLoad(tabId: number): Promise<void> {
             }
         };
 
-        const removeListener = (closedTabId: number) => {
+        const removeListener = async (closedTabId: number) => {
             if (closedTabId == tabId) {
                 cleanup();
                 reject(new Error(`Tab ${tabId} was closed before loading completed.`));
+
+                await sendDownloadFailureMessage(tabId);
             }
         }
 

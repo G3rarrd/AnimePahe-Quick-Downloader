@@ -1,47 +1,39 @@
 import type { DownloadProgress } from "../../types/downloadProgress";
 
 import { tabsState } from "../state";
+import { sendDownloadFailureMessage, sendDownloadSuccessMessage, sendProgress } from "./messageService";
 import { closeTabWhenPossible } from "./tabService";
 
 export async function waitForDownload(tabId : number) {
-    const listener =  async (download : chrome.downloads.DownloadItem) => {
-        const state = tabsState.get(tabId)
+    const state = tabsState.get(tabId)
+    
+    if (!state) {
+        console.warn("Tab was not found");
+        return;
+    }
+
+    // Need to know if it was prematurely closed
+    const tabRemovedListener = async (closedTabId: number) => {
+        await sendDownloadFailureMessage(tabId);
+        chrome.tabs.onRemoved.removeListener(tabRemovedListener);
+    }
+
+    chrome.tabs.onRemoved.addListener(tabRemovedListener);
+
+    const downloadCreationListener =  async (download : chrome.downloads.DownloadItem) => {
         const downloadId = download.id
-        
-        if (!state) {
-            console.warn("Tab was not found");
-            return;
-        }
 
-        await chrome.tabs.sendMessage(state.sourceTabId, {
-            type: "DOWNLOAD_ID_FOUND",
-            downloadKey: state.downloadKey,
-            downloadId,
-        }).catch(() => {});
+        await sendDownloadSuccessMessage(tabId, downloadId);
 
-        monitorDownload(state.sourceTabId, downloadId)
+        monitorDownload(state.sourceTabId, downloadId);
+
+        chrome.tabs.onRemoved.removeListener(tabRemovedListener);
+
         await closeTabWhenPossible(tabId)
-        chrome.downloads.onCreated.removeListener(listener);
+        
+        chrome.downloads.onCreated.removeListener(downloadCreationListener);
     }
-    chrome.downloads.onCreated.addListener(listener);
-}
-
-async function sendProgress(
-    sourceTabId: number,
-    payload: DownloadProgress
-) {
-    try {
-        // Message Handler: src\components\progressContainer.ts
-        await chrome.tabs.sendMessage(sourceTabId, {
-            type: "DOWNLOAD_PROGRESS",
-            payload,
-        });
-    } catch (error) {
-        console.error(
-            `Failed to send progress to tab ${sourceTabId}:`,
-            error
-        );
-    }
+    chrome.downloads.onCreated.addListener(downloadCreationListener);
 }
 
 function monitorDownload(sourceTabId : number, downloadId : number){
